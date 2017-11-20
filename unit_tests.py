@@ -19,6 +19,9 @@ class HomePageTest(unittest.TestCase):
         response = self.app.get('/', follow_redirects=True)
         self.assertTrue('<title>pydnmr</title>' in response.get_data(
             as_text=True))
+        self.assertTrue('<h1>pydnmr</h1>' in response.get_data(
+            as_text=True))
+
 
 if __name__ == '__main__':
     unittest.main()

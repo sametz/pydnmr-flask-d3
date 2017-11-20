@@ -16,6 +16,9 @@ class AppTest(unittest.TestCase):
         # The user sees that the app name contains "pydnmr"
         self.assertIn('pydnmr', self.browser.title)
 
+        # The user sees an h1 banner with "pydnmr" in the title
+        
+
         # The user sees a radiobutton menu to select the type of calcuation
         self.fail('finish writing tests')
         # The user sees data for the selected model displayed in the body of the page

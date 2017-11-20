@@ -35,7 +35,10 @@ class AppTest(unittest.TestCase):
         two_spin_button = model_selection.find_element_by_id('two-singlets')
         two_spin_button.click
 
-        # The user sees data for the selected model displayed in the body of the page
+        # The user sees the placeholder response for 'two-singlets' in the
+        # plot area
+        plot_area = self.browser.find_element_by_id('plot-area')
+        self.assertIn('two singlets', plot_area.get_attribute('innerHTML'))
 
         self.fail('finish writing tests')
 

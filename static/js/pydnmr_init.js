@@ -4,6 +4,9 @@
     var WIDTH_DEFAULT = 600;
     var HEIGHT_DEFAULT = 400;
     var PADDING = 40;
+    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+                innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
+                innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
     var dummy_data = [ { label: "Data Set 1",
                    x: [0, 1, 2, 3, 4],
                    y: [0, 1, 2, 3, 4] },
@@ -19,14 +22,78 @@
         console.log("creating SVG");
         pydnmr.svg = d3.select("#plot-area").append("svg")
             .attr("width", WIDTH_DEFAULT)
-            .attr("height", HEIGHT_DEFAULT);
+            .attr("height", HEIGHT_DEFAULT)
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                console.log("svg created");
         pydnmr.path = pydnmr.svg.append("path")
             .attr("id", "plot-path")
-        console.log("svg created");
     };
 
+
     pydnmr.update = function(data) {
-        console.log("entering update")
+        console.log("entering update");
+        pydnmr.updateScale(data);
+        // pydnmr.updateAxes(data);
+        pydnmr.updatePlot(data);
+    };
+
+     pydnmr.updateScale = function(data) {
+        console.log("update the scale!");
+        // var margin = {top: 20, right: 80, bottom: 30, left: 50},
+        //         innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
+        //         innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
+
+            pydnmr.xScale = d3.scale.linear()
+                .domain([0, //fix once rest works
+                    d3.max(data, function (d) {
+                        return d3.max(d.x);
+                    })])
+                .range([innerwidth, 0]);
+
+            pydnmr.yScale = d3.scale.linear()
+                .domain([0, //fix once rest works
+                    d3.max(data, function (d) {
+                    return d3.max(d.y);
+                })])
+                .range([innerheight, 0]);
+
+            console.log("scales should be made");
+
+        console.log("update the axes!");
+        pydnmr.xAxis = d3.svg.axis()
+            .scale(pydnmr.xScale)
+            .orient("bottom");
+        pydnmr.yAxis = d3.svg.axis()
+            .scale(pydnmr.yScale)
+            .orient("left");
+        pydnmr.svg.append("g")
+            .attr("class", "x-axis")
+            .attr("transform", "translate(0," + innerheight + ")")
+            .call(pydnmr.xAxis);
+        pydnmr.svg.append("g")
+            .attr("class", "y-axis")
+            .call(pydnmr.yAxis);
+        console.log("axes should be made");
+    };
+
+     pydnmr.updateAxes = function(data) {
+        console.log("update the axes!");
+        pydnmr.xAxis = d3.svg.axis()
+            .scale(pydnmr.xScale)
+            .orient("bottom");
+        pydnmr.yAxis = d3.svg.axis()
+            .scale(pydnmr.yScale)
+            .orient("left");
+        pydnmr.svg.append("g")
+            .attr("class", "x-axis")
+            .call(pydnmr.xAxis);
+        pydnmr.svg.append("g")
+            .attr("class", "y-axis")
+            .call(pydnmr.yAxis);
+        console.log("axes should be made");
+    };
+
+    pydnmr.updatePlot = function(data) {
         pydnmr.path.datum(data)
             .call(pydnmr.plot);
         // console.log("data should be bound")
@@ -43,8 +110,23 @@
             var minimum = d3.min(datasets, function(d) {return d3.min(d.y);});
             var maximum = d3.max(datasets, function(d) {return d3.max(d.y);});
             console.log(minimum + ", " + maximum);
+            var line = d3.svg.line()
+                .interpolate("basis")
+                .x(function (d) {
+                    // console.log("entering line x")
+                    // console.log("parsing" + d);
+                    // console.log("scaled" + xScale(d));
+                    return pydnmr.xScale(d[0]);
+                })
+                .y(function (d) {
+                    return pydnmr.yScale(d[1]);
+                });
+            pydnmr.path.attr("class", "line")
+                .attr("d", function(d) {return line(d);})
         });
         console.log("did datasets get logged?");
+
+
     };
 
     pydnmr.testFunction("inner function worked!");

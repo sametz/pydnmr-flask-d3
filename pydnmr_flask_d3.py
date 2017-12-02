@@ -18,19 +18,19 @@ def serve_data():
     variable_list = model['entry_names']
     args = [model['entry_dict'][variable]['value']
               for variable in variable_list]
-    print(args)
+    # print(args)
     plot_data = model['model'](*args)
-    print(plot_data)
-    print(type(plot_data))
-    print(type(plot_data[0]))
+    # print(plot_data)
+    # print(type(plot_data))
+    # print(type(plot_data[0]))
     plot_data_list = [t for t in plot_data]
     export_data = [[x for x in t] for t in plot_data_list]
     export_dict = {'x': export_data[0],
                    'y': export_data[1]}
-    print(type(export_data))
-    print(type(export_data[0]))
-    print(export_dict['x'])
-    print(export_dict['y'])
+    # print(type(export_data))
+    # print(type(export_data[0]))
+    # print(export_dict['x'])
+    # print(export_dict['y'])
 
     return jsonify(export_dict)
 

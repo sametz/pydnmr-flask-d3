@@ -4,6 +4,7 @@
     var WIDTH_DEFAULT = 600;
     var HEIGHT_DEFAULT = 400;
     var PADDING = 40;
+    var TRANS_DURATION = 100;
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
                 innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
                 innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
@@ -21,53 +22,61 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                 console.log("svg created");
         pydnmr.path = pydnmr.svg.append("path")
-            .attr("id", "plot-path")
+            .attr("id", "plot-path");
+        pydnmr.xScale = d3.scale.linear()
+            .range([innerwidth, 0]);
+        pydnmr.yScale = d3.scale.linear()
+            .range([innerheight, 0]);
+        pydnmr.xAxis = d3.svg.axis()
+            .orient("bottom");
+        pydnmr.yAxis = d3.svg.axis()
+            .orient("left");
+        pydnmr.svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + innerheight + ")");
+        pydnmr.svg.append("g")
+            .attr("class", "y axis");
     };
-
 
     pydnmr.update = function(data) {
         console.log("entering update");
         pydnmr.updateScale(data);
-        // pydnmr.updateAxes(data);
-        // pydnmr.updatePlot(data);
         pydnmr.plot(data);
     };
 
      pydnmr.updateScale = function(data) {
-        console.log("update the scale!");
+        // console.log("update the scale!");
         // var margin = {top: 20, right: 80, bottom: 30, left: 50},
         //         innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
         //         innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
-        console.log("testing max functions...");
-        var xmax = d3.max(data.x, function(d) {return d;});
-        var ymax = d3.max(data.y, function(d) {return d;});
-        console.log(xmax, ymax);
-        pydnmr.xScale = d3.scale.linear()
-            .domain([d3.min(data.x, function(d) {return d;}),
-                d3.max(data.x, function (d) {return d;})])
-            .range([innerwidth, 0]);
+        // console.log("testing max functions...");
+        // var xmax = d3.max(data.x, function(d) {return d;});
+        // var ymax = d3.max(data.y, function(d) {return d;});
+        // console.log(xmax, ymax);
+        pydnmr.xScale.domain([d3.min(data.x, function(d) {return d;}),
+                d3.max(data.x, function (d) {return d;})]);
 
-        pydnmr.yScale = d3.scale.linear()
-            .domain([d3.min(data.y, function (d) {return d}),
-                d3.max(data.y, function (d) {return d;})])
-            .range([innerheight, 0]);
+        pydnmr.yScale.domain([d3.min(data.y, function (d) {return d}),
+                d3.max(data.y, function (d) {return d;})]);
 
         console.log("scales should be made");
 
         console.log("update the axes!");
-        pydnmr.xAxis = d3.svg.axis()
-            .scale(pydnmr.xScale)
-            .orient("bottom");
-        pydnmr.yAxis = d3.svg.axis()
-            .scale(pydnmr.yScale)
-            .orient("left");
-        pydnmr.svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + innerheight + ")")
+        pydnmr.xAxis.scale(pydnmr.xScale);
+        pydnmr.yAxis.scale(pydnmr.yScale);
+        pydnmr.svg.select('.x.axis')
+            .transition().duration(TRANS_DURATION)
             .call(pydnmr.xAxis);
-        pydnmr.svg.append("g")
-            .attr("class", "y axis")
+        pydnmr.svg.select('.y.axis')
+            .transition().duration(TRANS_DURATION)
             .call(pydnmr.yAxis);
+        // pydnmr.svg.append("g")
+        //     .attr("class", "x axis")
+        //     .attr("transform", "translate(0," + innerheight + ")")
+        //     .call(pydnmr.xAxis);
+        // pydnmr.svg.append("g")
+        //     .attr("class", "y axis")
+        //     .call(pydnmr.yAxis);
         console.log("axes should be made");
     };
 
@@ -96,25 +105,25 @@
 
     pydnmr.plot = function(data) {
         console.log("entered plot");
-        console.log("Can data be logged?");
-        console.log(data);
-        console.log("minimum and maximum y:");
-        var minimum = d3.min(data.y, function(d) {return d;});
-        var maximum = d3.max(data.y, function(d) {return d;});
-        console.log(minimum + ", " + maximum);
+        // console.log("Can data be logged?");
+        // console.log(data);
+        // console.log("minimum and maximum y:");
+        // var minimum = d3.min(data.y, function(d) {return d;});
+        // var maximum = d3.max(data.y, function(d) {return d;});
+        // console.log(minimum + ", " + maximum);
         var plot_data = d3.zip(data.x, data.y);
         var line = d3.svg.line()
             .interpolate("basis")
             .x(function (d) {
-                console.log("entering line x")
-                console.log("parsing" + d + "--> " + d[0]);
-                console.log("scaled" + pydnmr.xScale(d[0]));
+                // console.log("entering line x")
+                // console.log("parsing" + d + "--> " + d[0]);
+                // console.log("scaled" + pydnmr.xScale(d[0]));
                 return pydnmr.xScale(d[0]);
             })
             .y(function (d) {
-                console.log("entering line y")
-                console.log("parsing" + d + "--> " + d[1]);
-                console.log("scaled" + pydnmr.yScale(d[1]));
+                // console.log("entering line y")
+                // console.log("parsing" + d + "--> " + d[1]);
+                // console.log("scaled" + pydnmr.yScale(d[1]));
                 return pydnmr.yScale(d[1]);
             });
 
@@ -131,7 +140,7 @@
         //     .datum(plot_data)
         //     .attr("d", function(d){return line(d);});
 
-        console.log("did datasets get logged?");
+        // console.log("did datasets get logged?");
 
 
     };

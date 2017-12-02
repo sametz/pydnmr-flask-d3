@@ -12,10 +12,6 @@
         y: [0, 1, 4, 9, 16]
     };
 
-    pydnmr.testFunction = function(message) {
-        console.log(message);
-    };
-
     pydnmr.init = function(data) {
         console.log("creating SVG");
         pydnmr.svg = d3.select("#plot-area").append("svg")
@@ -71,11 +67,11 @@
             .scale(pydnmr.yScale)
             .orient("left");
         pydnmr.svg.append("g")
-            .attr("class", "x-axis")
+            .attr("class", "x axis")
             .attr("transform", "translate(0," + innerheight + ")")
             .call(pydnmr.xAxis);
         pydnmr.svg.append("g")
-            .attr("class", "y-axis")
+            .attr("class", "y axis")
             .call(pydnmr.yAxis);
         console.log("axes should be made");
     };
@@ -113,15 +109,18 @@
         console.log(minimum + ", " + maximum);
         var plot_data = d3.zip(data.x, data.y);
         var line = d3.svg.line()
-            // .interpolate("basis")
+            .interpolate("basis")
             .x(function (d) {
                 console.log("entering line x")
-                console.log("parsing" + d);
+                console.log("parsing" + d + "--> " + d[0]);
                 console.log("scaled" + pydnmr.xScale(d[0]));
                 return pydnmr.xScale(d[0]);
             })
             .y(function (d) {
-                return pydnmr.yScale(d[0]);
+                console.log("entering line y")
+                console.log("parsing" + d + "--> " + d[1]);
+                console.log("scaled" + pydnmr.yScale(d[1]));
+                return pydnmr.yScale(d[1]);
             });
 
         pydnmr.path.attr("class", "line")
@@ -132,17 +131,16 @@
                 // console.log(line(d));
                 return line(d);})
         ;
-        pydnmr.svg.append("path")
-            .attr("id", "secondpath")
-            .datum(plot_data)
-            .attr("d", function(d){return line(d);});
+        // pydnmr.svg.append("path")
+        //     .attr("id", "secondpath")
+        //     .datum(plot_data)
+        //     .attr("d", function(d){return line(d);});
 
         console.log("did datasets get logged?");
 
 
     };
 
-    pydnmr.testFunction("inner function worked!");
     pydnmr.init(dummy_data);
     pydnmr.update(dummy_data);
 }(window.pydnmr = window.pydnmr || {}));

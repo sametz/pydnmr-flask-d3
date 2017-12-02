@@ -7,12 +7,10 @@
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
                 innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
                 innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
-    var dummy_data = [ { label: "Data Set 1",
-                   x: [0, 1, 2, 3, 4],
-                   y: [0, 1, 2, 3, 4] },
-                 { label: "Data Set 2",
-                   x: [0, 1, 2, 3, 4],
-                   y: [0, 1, 4, 9, 16] } ] ;
+    var dummy_data = {
+        x: [0, 1, 2, 3, 4],
+        y: [0, 1, 4, 9, 16]
+    };
 
     pydnmr.testFunction = function(message) {
         console.log(message);
@@ -34,7 +32,8 @@
         console.log("entering update");
         pydnmr.updateScale(data);
         // pydnmr.updateAxes(data);
-        pydnmr.updatePlot(data);
+        // pydnmr.updatePlot(data);
+        pydnmr.plot(data);
     };
 
      pydnmr.updateScale = function(data) {
@@ -42,22 +41,27 @@
         // var margin = {top: 20, right: 80, bottom: 30, left: 50},
         //         innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
         //         innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
-
-            pydnmr.xScale = d3.scale.linear()
-                .domain([0, //fix once rest works
-                    d3.max(data, function (d) {
-                        return d3.max(d.x);
-                    })])
-                .range([innerwidth, 0]);
-
-            pydnmr.yScale = d3.scale.linear()
-                .domain([0, //fix once rest works
-                    d3.max(data, function (d) {
-                    return d3.max(d.y);
+        console.log("testing max functions...");
+        var xmax = d3.max(data.x, function(d) {return d;});
+        var ymax = d3.max(data.y, function(d) {return d;});
+        console.log(xmax, ymax);
+        pydnmr.xScale = d3.scale.linear()
+            .domain([0, //fix once rest works
+                d3.max(data.x, function (d) {
+                    // return d3.max(d.x);
+                    return d;
                 })])
-                .range([innerheight, 0]);
+            .range([innerwidth, 0]);
 
-            console.log("scales should be made");
+        pydnmr.yScale = d3.scale.linear()
+            .domain([0, //fix once rest works
+                d3.max(data.y, function (d) {
+                // return d3.max(d.y);
+                return d;
+            })])
+            .range([innerheight, 0]);
+
+        console.log("scales should be made");
 
         console.log("update the axes!");
         pydnmr.xAxis = d3.svg.axis()
@@ -76,54 +80,63 @@
         console.log("axes should be made");
     };
 
-     pydnmr.updateAxes = function(data) {
-        console.log("update the axes!");
-        pydnmr.xAxis = d3.svg.axis()
-            .scale(pydnmr.xScale)
-            .orient("bottom");
-        pydnmr.yAxis = d3.svg.axis()
-            .scale(pydnmr.yScale)
-            .orient("left");
-        pydnmr.svg.append("g")
-            .attr("class", "x-axis")
-            .call(pydnmr.xAxis);
-        pydnmr.svg.append("g")
-            .attr("class", "y-axis")
-            .call(pydnmr.yAxis);
-        console.log("axes should be made");
-    };
+    //  pydnmr.updateAxes = function(data) {
+    //     console.log("update the axes!");
+    //     pydnmr.xAxis = d3.svg.axis()
+    //         .scale(pydnmr.xScale)
+    //         .orient("bottom");
+    //     pydnmr.yAxis = d3.svg.axis()
+    //         .scale(pydnmr.yScale)
+    //         .orient("left");
+    //     pydnmr.svg.append("g")
+    //         .attr("class", "x-axis")
+    //         .call(pydnmr.xAxis);
+    //     pydnmr.svg.append("g")
+    //         .attr("class", "y-axis")
+    //         .call(pydnmr.yAxis);
+    //     console.log("axes should be made");
+    // };
 
-    pydnmr.updatePlot = function(data) {
-        pydnmr.path.datum(data)
-            .call(pydnmr.plot);
-        // console.log("data should be bound")
-    };
+    // pydnmr.updatePlot = function(data) {
+    //     pydnmr.path.datum(data)
+    //         .call(pydnmr.plot);
+    //     // console.log("data should be bound")
+    // };
 
-    pydnmr.plot = function(selection) {
+    pydnmr.plot = function(data) {
         console.log("entered plot");
-        console.log("Can selection be logged?");
-        console.log(selection);
-        selection.each(function(datasets) {
-            console.log("here's a dataset:");
-            console.log(datasets);
-            console.log("minimum and maximum:");
-            var minimum = d3.min(datasets, function(d) {return d3.min(d.y);});
-            var maximum = d3.max(datasets, function(d) {return d3.max(d.y);});
-            console.log(minimum + ", " + maximum);
-            var line = d3.svg.line()
-                .interpolate("basis")
-                .x(function (d) {
-                    // console.log("entering line x")
-                    // console.log("parsing" + d);
-                    // console.log("scaled" + xScale(d));
-                    return pydnmr.xScale(d[0]);
-                })
-                .y(function (d) {
-                    return pydnmr.yScale(d[1]);
-                });
-            pydnmr.path.attr("class", "line")
-                .attr("d", function(d) {return line(d);})
-        });
+        console.log("Can data be logged?");
+        console.log(data);
+        console.log("minimum and maximum y:");
+        var minimum = d3.min(data.y, function(d) {return d;});
+        var maximum = d3.max(data.y, function(d) {return d;});
+        console.log(minimum + ", " + maximum);
+        var plot_data = d3.zip(data.x, data.y);
+        var line = d3.svg.line()
+            // .interpolate("basis")
+            .x(function (d) {
+                console.log("entering line x")
+                console.log("parsing" + d);
+                console.log("scaled" + pydnmr.xScale(d[0]));
+                return pydnmr.xScale(d[0]);
+            })
+            .y(function (d) {
+                return pydnmr.yScale(d[0]);
+            });
+
+        pydnmr.path.attr("class", "line")
+            .datum(plot_data)
+            .attr("d", function(d) {
+                console.log("about to call line");
+                console.log(d);
+                // console.log(line(d));
+                return line(d);})
+        ;
+        pydnmr.svg.append("path")
+            .attr("id", "secondpath")
+            .datum(plot_data)
+            .attr("d", function(d){return line(d);});
+
         console.log("did datasets get logged?");
 
 

@@ -17,6 +17,7 @@
         pydnmr.svg = d3.select("#plot-area").append("svg")
             .attr("width", WIDTH_DEFAULT)
             .attr("height", HEIGHT_DEFAULT)
+            .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
                 console.log("svg created");
         pydnmr.path = pydnmr.svg.append("path")
@@ -42,19 +43,13 @@
         var ymax = d3.max(data.y, function(d) {return d;});
         console.log(xmax, ymax);
         pydnmr.xScale = d3.scale.linear()
-            .domain([0, //fix once rest works
-                d3.max(data.x, function (d) {
-                    // return d3.max(d.x);
-                    return d;
-                })])
+            .domain([d3.min(data.x, function(d) {return d;}),
+                d3.max(data.x, function (d) {return d;})])
             .range([innerwidth, 0]);
 
         pydnmr.yScale = d3.scale.linear()
-            .domain([0, //fix once rest works
-                d3.max(data.y, function (d) {
-                // return d3.max(d.y);
-                return d;
-            })])
+            .domain([d3.min(data.y, function (d) {return d}),
+                d3.max(data.y, function (d) {return d;})])
             .range([innerheight, 0]);
 
         console.log("scales should be made");

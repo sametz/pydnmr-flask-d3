@@ -3,7 +3,6 @@
     console.log('pydnmr_init.js start');
     var WIDTH_DEFAULT = 600;
     var HEIGHT_DEFAULT = 400;
-    var PADDING = 40;
     var TRANS_DURATION = 100;
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
                 innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
@@ -13,7 +12,7 @@
         y: [0, 1, 4, 9, 16]
     };
 
-    pydnmr.init = function(data) {
+    pydnmr.init = function() {
         console.log("creating SVG");
         pydnmr.svg = d3.select("#plot-area").append("svg")
             .attr("width", WIDTH_DEFAULT)
@@ -145,8 +144,8 @@
 
     };
 
-    pydnmr.init(dummy_data);
-    pydnmr.update(dummy_data);
+    pydnmr.init();
+    // pydnmr.update(dummy_data);
 }(window.pydnmr = window.pydnmr || {}));
 
 // window.onload = init;

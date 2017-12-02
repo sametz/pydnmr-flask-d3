@@ -1,13 +1,23 @@
 /* global d3 */
 (function (pydnmr) {
-    modelSelect = d3.selectAll("#model-selection input");
-    modelSelect.on("change", function() {
+    function newModel () {
         var modelName = d3.select(this).property("value");
         console.log('model name ' + modelName + ' selected');
-        d3.json("/data?model=" + modelName, function(data) {
+        d3.json("/data?model=" + modelName, function (data) {
             pydnmr.update(data);
         });
-    });
+    }
+
+    modelSelect = d3.selectAll("#model-selection input");
+    modelSelect.on("change", newModel);
+    //     function() {
+    //     var modelName = d3.select(this).property("value");
+    //     console.log('model name ' + modelName + ' selected');
+    //     d3.json("/data?model=" + modelName, function(data) {
+    //         pydnmr.update(data);
+    //     });
+    // });
+    d3.select("input[value=\"two-singlets\"]").property("checked", true).each(newModel);
 }(window.pydnmr = window.pydnmr || {}));
 
 // console.log('pydnmr.js start');

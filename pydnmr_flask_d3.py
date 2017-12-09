@@ -1,10 +1,17 @@
 import numpy as np
 from flask import Flask, jsonify, render_template, request
+from flask_cors import CORS
+from flask_socketio import SocketIO, send, emit
 from model_definitions import dnmr_two_singlets_kwargs, dnmr_AB_kwargs
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
+socketio = SocketIO(app)
+CORS(app)
+
 model_dict = {'two-singlets': dnmr_two_singlets_kwargs,
               'AB': dnmr_AB_kwargs}
+
 
 @app.route('/')
 def hello_world():
@@ -35,5 +42,21 @@ def serve_data():
     return jsonify(export_dict)
 
 
+@socketio.on('client_connected')
+def handle_client_connect_event(json):
+    print('python receives "client_connected"')
+    print('received json: {0}'.format(str(json)))
+
+
+@socketio.on('message')
+def handle_message(message):
+    model = model_dict[message['model']]
+    print('model received: ', model)
+    send('python is sending this data')
+
+
 if __name__ == '__main__':
-    app.run()
+    # when using socketio, need to run the app differently.
+    # note: get message about installing eventlet or gevent/gevent-websocket
+    # app.run()
+    socketio.run(app, debug=True)

@@ -5,8 +5,29 @@
         d3.json("/data?model=" + modelName, function (data) {
             pydnmr.update(data);
         });
+        socket.emit('message', {
+            "model": modelName
+            // "va":$("#va").val(),
+            // "vb":$("#vb").val(),
+            // "k":$("#k").val(),
+            // "wa":$("#wa").val(),
+            // "wb":$("#wb").val(),
+            // "percent_a":$("#percent_a").val()
+        });
     }
 
+    var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+    socket.on('connect', function() {
+        // we emit a connected message to let knwo the client that we are connected.
+        console.log('js emitting "client_connected"');
+        socket.emit('client_connected', {data: 'New client!'});
+    });
+
+    socket.on('message', function(data) {
+        console.log("JS received a message!");
+        // pydnmr.update(data);
+    });
     var modelSelect = d3.selectAll("#model-selection input");
     modelSelect.on("change", newModel);
 

@@ -2,11 +2,12 @@
 (function (pydnmr) {
     function newModel () {
         var modelName = d3.select(this).property("value");
-        d3.json("/data?model=" + modelName, function (data) {
-            pydnmr.update(data);
-        });
+        // d3.json("/data?model=" + modelName, function (data) {
+        //     pydnmr.update(data);
+        // });
         socket.emit('message', {
-            "model": modelName
+            "model": modelName,
+            "kwargs": {}
             // "va":$("#va").val(),
             // "vb":$("#vb").val(),
             // "k":$("#k").val(),
@@ -26,7 +27,7 @@
 
     socket.on('message', function(data) {
         console.log("JS received a message!");
-        // pydnmr.update(data);
+        pydnmr.update(data);
     });
     var modelSelect = d3.selectAll("#model-selection input");
     modelSelect.on("change", newModel);

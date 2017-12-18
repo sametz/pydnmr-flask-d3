@@ -4,8 +4,8 @@
     var HEIGHT_DEFAULT = 400;
     var TRANS_DURATION = 100;  // speed of transitions
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
-                innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
-                innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
+        innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
+        innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
 
     pydnmr.init = function() {
         pydnmr.svg = d3.select("#plot-area").append("svg")

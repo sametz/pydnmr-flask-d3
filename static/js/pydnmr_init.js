@@ -3,6 +3,41 @@
     var WIDTH_DEFAULT = 600;
     var HEIGHT_DEFAULT = 400;
     var TRANS_DURATION = 100;  // speed of transitions
+    var TWO_SINGLETS_PRESETS = {
+        'va': {'value': 165},
+        'vb': {'value': 135},
+        'ka': {
+            'value': 1.5,
+            'min': 0.01},
+        'wa': {
+            'value': 0.5,
+            'min': 0.01},
+        'wb': {
+            'value': 0.5,
+            'min': 0.01},
+        'pa': {
+            'value': 50,
+            'min': 0,
+            'max': 100}
+    };
+    var AB_PRESETS = {
+        'va': {'value': 165},
+        'vb': {'value': 135},
+        'J': {'value': 12},
+        'k': {
+            'value': 12,
+            'min': 0.01},
+        'w': {
+            'value': 0.5,
+            'min': 0.01}
+    };
+
+    pydnmr.modelVariables = {
+        // Conversion to string and back to JSON = deep copy of object
+        'two-singlets': JSON.parse(JSON.stringify(TWO_SINGLETS_PRESETS)),
+        'AB': JSON.parse(JSON.stringify(AB_PRESETS))
+    };
+
     var margin = {top: 20, right: 80, bottom: 30, left: 50},
         innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
         innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;

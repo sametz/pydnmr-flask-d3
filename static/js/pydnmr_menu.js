@@ -17,7 +17,8 @@
     }
 
     function switchVariables(modelName) {
-        d3.select('#variable-entry').html(modelName)
+        var filler = JSON.stringify(pydnmr.modelVariables[modelName]);
+        d3.select('#variable-entry').html(filler);
     }
 
     var socket = io.connect('http://' + document.domain + ':' + location.port);

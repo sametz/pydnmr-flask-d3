@@ -2,6 +2,7 @@
 (function (pydnmr) {
     function newModel () {
         var modelName = d3.select(this).property("value");
+        switchVariables(modelName);
         console.log('JS requesting a new model');
         socket.emit('message', {
             "model": modelName,
@@ -13,6 +14,10 @@
             // "wb":$("#wb").val(),
             // "percent_a":$("#percent_a").val()
         });
+    }
+
+    function switchVariables(modelName) {
+        d3.select('#variable-entry').html(modelName)
     }
 
     var socket = io.connect('http://' + document.domain + ':' + location.port);

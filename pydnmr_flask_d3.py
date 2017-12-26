@@ -47,12 +47,16 @@ def handle_message(message):
     model_name = message['model']
 
     # when all is ready, below should work
-    # kwargs = message['kwargs']
+    kwargs = message['kwargs']
+    args = kwargs_to_args(model_name, kwargs)
+    model = model_dict[model_name]['model']
+    plot_data = model(*args)
+    converted_plot_data = convert_plot_data(plot_data)
     # until then, use this for "mocked" kwargs:
-    kwargs = initial_kwargs(model_dict[model_name])
+    # kwargs = initial_kwargs(model_dict[model_name])
 
-    data = create_plot_data(model_name, kwargs)
-    send(data)
+    # data = create_plot_data(model_name, kwargs)
+    send(converted_plot_data)
 
 
 def create_plot_data(model_name, kwargs):
@@ -87,18 +91,19 @@ def initial_kwargs(model_presets):
     return {keyword: entry_dict[keyword]['value'] for keyword in arg_list}
 
 
-def kwargs_to_args(model_presets, kwargs):
+def kwargs_to_args(model, kwargs):
     """ Convert kwargs for model calculation to args.
 
     Currently, DNMR models accept args, not kwargs, so this function provides
     an interface.
-    :param model_presets: the dictionary of presets for the requested model.
-    Contains the list of variables 'entry_names' in the correct order for args.
+    :param model: the name of the requested model.
     :param kwargs: {'variable': value}
     :return: [int or float...]
     """
-    arg_list = model_presets['entry_names']
-    args = [kwargs[arg] for arg in arg_list]
+    arg_list = model_dict[model]['entry_names']
+    print(arg_list)
+    args = [float(kwargs[arg]) for arg in arg_list]
+    print(args)
     return args
 
 

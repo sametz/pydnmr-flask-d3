@@ -4,28 +4,43 @@
         pydnmr.modelName = d3.select(this).property("value");
         addToolbar(pydnmr.modelName);
         console.log('JS requesting a new model');
-        socket.emit('message', {
-            "model": pydnmr.modelName,
-            "kwargs": {}  // to be populated when variable inputs implemented
+        updateData();
+        // socket.emit('message', {
+        //     "model": pydnmr.modelName,
+        //     "kwargs": {}  // to be populated when variable inputs implemented
             // "va":$("#va").val(),
             // "vb":$("#vb").val(),
             // "k":$("#k").val(),
             // "wa":$("#wa").val(),
             // "wb":$("#wb").val(),
             // "percent_a":$("#percent_a").val()
+        // });
+    }
+
+    function callModel(model, kwargs) {
+        console.log('updating data');
+        socket.emit('message', {
+            "model": pydnmr.modelName,
+            "kwargs": kwargs
         });
     }
 
     function updateData() {
         console.log("I should update my data now.");
         let toolbar_settings = pydnmr.modelVariables[pydnmr.modelName];
+        let kwargs = {};
         console.log(JSON.stringify(toolbar_settings));
         let inputs = $("#variable-entry").find(":input");
         for (let i = 0; i < inputs.length; i++) {
-            console.log('handling ' + inputs[i].name);
-            console.log('value : ' + inputs[i].value);
+            let k = inputs[i].name
+            let v = inputs[i].value
+            console.log('handling ' + k);
+            console.log('value : ' + v);
             toolbar_settings[inputs[i].name].value = inputs[i].value;
+            kwargs[k] = v;
         }
+        console.log('kwargs: ' + JSON.stringify(kwargs));
+        callModel(pydnmr.modelName, kwargs);
     }
 
     function addToolbar(modelName) {

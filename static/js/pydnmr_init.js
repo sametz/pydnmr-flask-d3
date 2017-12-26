@@ -1,9 +1,9 @@
 /* global d3 */
 (function (pydnmr) {
-    var WIDTH_DEFAULT = 600;
-    var HEIGHT_DEFAULT = 400;
-    var TRANS_DURATION = 100;  // speed of transitions
-    var TWO_SINGLETS_PRESETS = {
+    const WIDTH_DEFAULT = 600;
+    const HEIGHT_DEFAULT = 400;
+    const TRANS_DURATION = 100;  // speed of transitions
+    const TWO_SINGLETS_PRESETS = {
         'va': {'value': 165},
         'vb': {'value': 135},
         'ka': {
@@ -20,7 +20,7 @@
             'min': 0,
             'max': 100}
     };
-    var AB_PRESETS = {
+    const AB_PRESETS = {
         'va': {'value': 165},
         'vb': {'value': 135},
         'J': {'value': 12},
@@ -38,7 +38,7 @@
         'AB': JSON.parse(JSON.stringify(AB_PRESETS))
     };
 
-    var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    let margin = {top: 20, right: 80, bottom: 30, left: 50},
         innerwidth = WIDTH_DEFAULT - margin.left - margin.right,
         innerheight = HEIGHT_DEFAULT - margin.top - margin.bottom;
 
@@ -91,8 +91,8 @@
     };
 
     pydnmr.plot = function(data) {
-        var plot_data = d3.zip(data.x, data.y);
-        var line = d3.svg.line()
+        let plot_data = d3.zip(data.x, data.y);
+        let line = d3.svg.line()
             .interpolate("basis")
             .x(function (d) {return pydnmr.xScale(d[0]);})
             .y(function (d) {return pydnmr.yScale(d[1]);});

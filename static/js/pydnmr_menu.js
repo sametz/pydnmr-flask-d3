@@ -1,12 +1,11 @@
 /* global d3 */
 (function (pydnmr) {
     function newModel () {
-        let modelName = d3.select(this).property("value");
-        // switchVariables(modelName);
-        addToolbar(modelName);
+        pydnmr.modelName = d3.select(this).property("value");
+        addToolbar(pydnmr.modelName);
         console.log('JS requesting a new model');
         socket.emit('message', {
-            "model": modelName,
+            "model": pydnmr.modelName,
             "kwargs": {}  // to be populated when variable inputs implemented
             // "va":$("#va").val(),
             // "vb":$("#vb").val(),
@@ -19,6 +18,14 @@
 
     function updateData() {
         console.log("I should update my data now.");
+        let toolbar_settings = pydnmr.modelVariables[pydnmr.modelName];
+        console.log(JSON.stringify(toolbar_settings));
+        let inputs = $("#variable-entry").find(":input");
+        for (let i = 0; i < inputs.length; i++) {
+            console.log('handling ' + inputs[i].name);
+            console.log('value : ' + inputs[i].value);
+            toolbar_settings[inputs[i].name].value = inputs[i].value;
+        }
     }
 
     function addToolbar(modelName) {
@@ -31,7 +38,12 @@
 
     function createWidget(label, value, minimum=0, maximum=10000) {
       let label_span = `<span id=${label}-span>${label}: </span>`;
-      let input = `<input type="number" id=${label}-input value="${value}" min="${minimum}" max="${maximum}">`;
+      let input = `<input type="number" 
+                          id="${label}-input" 
+                          name="${label}"
+                          value="${value}" 
+                          min="${minimum}" 
+                          max="${maximum}">`;
       // let widget = `<div id='vb-widget' class='widget'>${label_span}${input}</div>`;
       return `<div id='vb-widget' class='widget'>${label_span}${input}</div>`;
     }

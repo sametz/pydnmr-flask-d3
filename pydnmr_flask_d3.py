@@ -89,4 +89,9 @@ if __name__ == '__main__':
     # when using socketio, need to run the app differently.
     # note: get message about installing eventlet or gevent/gevent-websocket
     # app.run()
-    socketio.run(app, debug=True)
+    # socketio.run(app, debug=True)  # the non-cloud9 way to run the app
+
+    # Below: running the app with cloud9 settings
+    socketio.run(app,
+                 host=os.getenv('IP', '0.0.0.0'),
+                 port=int(os.getenv('PORT', 8080)))

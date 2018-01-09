@@ -1,20 +1,10 @@
-/* global d3 */
+/* global $, io, d3 */
 (function (pydnmr) {
     function newModel () {
         pydnmr.modelName = d3.select(this).property("value");
         addToolbar(pydnmr.modelName);
         console.log('JS requesting a new model');
         updateData();
-        // socket.emit('message', {
-        //     "model": pydnmr.modelName,
-        //     "kwargs": {}  // to be populated when variable inputs implemented
-            // "va":$("#va").val(),
-            // "vb":$("#vb").val(),
-            // "k":$("#k").val(),
-            // "wa":$("#wa").val(),
-            // "wb":$("#wb").val(),
-            // "percent_a":$("#percent_a").val()
-        // });
     }
 
     function callModel(model, kwargs) {
@@ -32,8 +22,8 @@
         console.log(JSON.stringify(toolbar_settings));
         let inputs = $("#variable-entry").find(":input");
         for (let i = 0; i < inputs.length; i++) {
-            let k = inputs[i].name
-            let v = inputs[i].value
+            let k = inputs[i].name;
+            let v = inputs[i].value;
             console.log('handling ' + k);
             console.log('value : ' + v);
             toolbar_settings[inputs[i].name].value = inputs[i].value;
@@ -68,13 +58,13 @@
       console.log('entered parseModelJSON');
       console.log(JSON.stringify(modelJSON));
       for (let widget in modelJSON) {
-        let label = widget;
+        let label = widget;  // in future, label may differ e.g. unicode
         let value = modelJSON[widget].value;
         let minimum = modelJSON[widget].min;
         let maximum = modelJSON[widget].max;
         console.log('parsing ' + widget);
         console.log(label + value + minimum + maximum);
-        widgetHTML = createWidget(label, value, minimum, maximum);
+        let widgetHTML = createWidget(label, value, minimum, maximum);
         console.log(widgetHTML);
         widget_list.push(widgetHTML);
         // for (var argument in modelJSON[widget]) {

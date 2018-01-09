@@ -4,10 +4,7 @@ The python backend for the web app version of pydnmr.
 Accepts requests to update the frontend's plot via websockets. Provides an
 interface between the frontend view and backend model-- the frontend requires
 plot data to be in the form of {'x': [float...], 'y': [float] but the model
-returns (numpy.linspace, numpy.linspace). Anticipates that the frontend will
-eventually submit requests with an object/dictionary of variable names and
-values. Currently, the data is substituted with the preset values from
-model_definitions.py.
+returns (numpy.linspace, numpy.linspace).
 """
 
 import numpy as np
@@ -38,75 +35,45 @@ def handle_client_connect_event(json):
 
 @socketio.on('message')
 def handle_message(message):
-    """ Send plot data requested by frontend.
+    """ Parse a JSON calculation request from the front end, call the
+    corresponding model with appropriate arguments, and return plot data.
 
     :param message: {"model": str,
                      "kwargs": {"str": float...}}
     Sends: {'x': [float...], 'y': [float...]}
     """
     model_name = message['model']
+    kwargs = message['kwargs']
+    args = kwargs_to_args(model_name, kwargs)
+    model = model_dict[model_name]['model']
+    plot_data = model(*args)
+    converted_plot_data = convert_plot_data(plot_data)
 
-    # when all is ready, below should work
-    # kwargs = message['kwargs']
-    # until then, use this for "mocked" kwargs:
-    kwargs = initial_kwargs(model_dict[model_name])
-
-    data = create_plot_data(model_name, kwargs)
-    send(data)
-
-
-def create_plot_data(model_name, kwargs):
-    """Convert kwargs to model args; call the model with args; and convert
-    the model response to correct format for frontend.
-
-    :param model_name: (str) The front-end's name for the requested model.
-    Currently 'two-singlets' or 'AB'
-    :param kwargs: (dict) {'variable name': number...}
-    :return: {'x': [float...], 'y': [float...]
-    """
-    print('model requested: ', model_name)
-    model_presets = model_dict[model_name]
-    args = kwargs_to_args(model_presets, kwargs)
-    plot_data = model_presets['model'](*args)
-    converted_data = convert_plot_data(plot_data)
-
-    return converted_data
+    send(converted_plot_data)
 
 
-def initial_kwargs(model_presets):
-    """Convert the entry_dict field in a model's definition to kwargs suitable
-    for conversion to args.
-
-    :param model_presets: {dict} with fields for 'entry_names' (a list of the
-    variables the model requires) and 'entry_dict' (a dict of dicts with
-    model presets).
-    :return: {'key': value} kwargs for the model
-    """
-    arg_list = model_presets['entry_names']
-    entry_dict = model_presets['entry_dict']
-    return {keyword: entry_dict[keyword]['value'] for keyword in arg_list}
-
-
-def kwargs_to_args(model_presets, kwargs):
+def kwargs_to_args(model_name, kwargs):
     """ Convert kwargs for model calculation to args.
 
     Currently, DNMR models accept args, not kwargs, so this function provides
     an interface.
-    :param model_presets: the dictionary of presets for the requested model.
-    Contains the list of variables 'entry_names' in the correct order for args.
+    :param model_name: the name of the requested model.
     :param kwargs: {'variable': value}
     :return: [int or float...]
     """
-    arg_list = model_presets['entry_names']
-    args = [kwargs[arg] for arg in arg_list]
+    # get list of args in correct order
+    arg_list = model_dict[model_name]['entry_names']
+    print(arg_list)
+    args = [float(kwargs[arg]) for arg in arg_list]
+    print(args)
     return args
 
 
 def convert_plot_data(model_data):
-    """Convert the plot data output by the model to the format required by
+    """Convert the plot data returned by the model to the format required by
     the frontend.
 
-    DNMR model output is a tuple of x, y linspaces. This needs to be
+    DNMR model output is a tuple of x, y numpy linspaces. This needs to be
     converted to a dictionary of x and y coordinates.
     :param model_data: (numpy.linspace, numpy.linspace)
     :return: {'x': [float...], 'y': [float...]}

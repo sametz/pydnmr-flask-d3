@@ -1,0 +1,6 @@
+blinker
+flask
+flask-cors
+flask-socketio
+numpy
+selenium
